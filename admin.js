@@ -35,16 +35,23 @@ function createQR() {
   const type = document.getElementById('activity').value;
   const qrDisplay = document.getElementById('qrDisplay');
   qrDisplay.innerHTML = '';
+
   const canvas = document.createElement('canvas');
   QRCode.toCanvas(canvas, type, error => {
-    if (error) console.error(error);
-    else qrDisplay.appendChild(canvas);
+    if (error) {
+      console.error("QR Code Error:", error);
+      alert("สร้าง QR Code ไม่สำเร็จ");
+    } else {
+      qrDisplay.appendChild(canvas);
+    }
   });
 }
 
 function closeQR() {
-  document.getElementById('qrDisplay').innerHTML = '<p>ปิด QR Code แล้ว</p>';
+  const qrDisplay = document.getElementById('qrDisplay');
+  qrDisplay.innerHTML = '<p style="color: gray;">QR Code ถูกปิดแล้ว</p>';
 }
 
-// โหลดรายชื่อทันที
+
+// เรียกใช้ทันทีเมื่อโหลดหน้า
 loadUsers();
