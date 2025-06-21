@@ -1,7 +1,4 @@
-// user.js
-// เพิ่มบรรทัดนี้บนสุดของ user.js
 import jsQR from "https://cdn.jsdelivr.net/npm/jsqr@1.5.1/dist/jsQR.es6.min.js";
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
   getFirestore,
@@ -23,78 +20,73 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const video = document.getElementById("video");
-let stream = null;
+// ห่อด้วย window.onload เพื่อให้ DOM โหลดเสร็จก่อน
+window.onload = () => {
+  const video = document.getElementById("video");
+  let stream = null;
 
-export async function scanQR() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = stream;
-    video.hidden = false;
-    await video.play();
+  document.getElementById('scanBtn')?.addEventListener('click', scanQR);
 
-    startScanLoop();
-  } catch (err) {
-    alert("ไม่สามารถเปิดกล้องได้: " + err.message);
-    console.error(err);
+  async function scanQR() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      video.srcObject = stream;
+      video.hidden = false;
+      await video.play();
+
+      startScanLoop();
+    } catch (err) {
+      alert("ไม่สามารถเปิดกล้องได้: " + err.message);
+      console.error(err);
+    }
   }
-}
 
-function startScanLoop() {
-  const canvasElement = document.createElement("canvas");
-  const canvas = canvasElement.getContext("2d");
+  function startScanLoop() {
+    const canvasElement = document.createElement("canvas");
+    const canvas = canvasElement.getContext("2d");
 
-  async function scanFrame() {
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvasElement.width = video.videoWidth;
-      canvasElement.height = video.videoHeight;
-      canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-      const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+    async function scanFrame() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvasElement.width = video.videoWidth;
+        canvasElement.height = video.videoHeight;
+        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
 
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code) {
+          alert("สแกนได้: " + code.data);
+          stopScan();
 
-      if (code) {
-        alert("สแกนได้: " + code.data);
-        stopScan();
+          const username = document.getElementById("userName").textContent.trim();
+          const userDoc = doc(db, "users", username);
+          const docSnap = await getDoc(userDoc);
 
-        const username = document.getElementById("userName").textContent.trim();
-        if (!username) {
-          alert("ไม่พบชื่อผู้ใช้");
-          return;
-        }
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (code.data === "attend") {
+              await updateDoc(userDoc, { attend: (data.attend || 0) + 1 });
+            } else if (code.data === "clean") {
+              await updateDoc(userDoc, { clean: (data.clean || 0) + 1 });
+            } else {
+              alert("QR code ไม่ถูกต้อง");
+              return;
+            }
 
-        const userDoc = doc(db, "users", username);
-        const docSnap = await getDoc(userDoc);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (code.data === "attend") {
-            await updateDoc(userDoc, { attend: (data.attend || 0) + 1 });
-          } else if (code.data === "clean") {
-            await updateDoc(userDoc, { clean: (data.clean || 0) + 1 });
-          } else {
-            alert("QR code ไม่ถูกต้อง");
-            return;
+            alert("อัปเดตกิจกรรมสำเร็จ");
+            location.reload();
           }
-          alert("อัพเดตข้อมูลกิจกรรมสำเร็จ");
-          location.reload();
-        } else {
-          alert("ไม่พบข้อมูลผู้ใช้ในระบบ");
         }
       }
+      requestAnimationFrame(scanFrame);
     }
+
     requestAnimationFrame(scanFrame);
   }
-  requestAnimationFrame(scanFrame);
-}
 
-function stopScan() {
-  if (stream) {
-    stream.getTracks().forEach((track) => track.stop());
+  function stopScan() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    video.hidden = true;
   }
-  video.hidden = true;
-}
-
-export function changeName() {
-  // ตัวอย่างเปลี่ยนชื่อใน Firestore (เขียนเองตามต้องการ)
-  alert("เปลี่ยนชื่อยังไม่ถูกเขียนครับ");
-}
+};
