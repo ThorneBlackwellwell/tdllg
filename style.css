@@ -1,0 +1,17 @@
+body {
+  font-family: sans-serif;
+  background: #222;
+  color: #fff;
+  padding: 20px;
+}
+input, select, button {
+  margin: 5px;
+  padding: 10px;
+  border-radius: 5px;
+}
+button {
+  background-color: #00b894;
+  color: white;
+  border: none;
+}
+.error { color: red; }

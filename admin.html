@@ -1,65 +1,35 @@
-<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>สร้าง QR Code กิจกรรม</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 30px;
-    }
-    input {
-      padding: 8px;
-      width: 80%;
-      margin-bottom: 10px;
-    }
-    canvas {
-      margin-top: 20px;
-    }
-  </style>
+  <title>ผู้ดูแล</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase App (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
+  <div class="admin-container">
+    <h2>หน้าผู้ดูแล</h2>
+    <input id="regName" placeholder="ชื่อจริง (ภาษาไทย)">
+    <button onclick="registerUser()">ลงทะเบียน</button>
+    <h3>รายชื่อทั้งหมด</h3>
+    <ul id="userList"></ul>
 
-  <h2>สร้าง QR Code สำหรับกิจกรรม</h2>
+    <h3>สร้าง QR Code กิจกรรม</h3>
+    <select id="activity">
+      <option value="attend">เข้าแถวหน้าเสาธง</option>
+      <option value="clean">ทำความสะอาด</option>
+    </select>
+    <button onclick="createQR()">สร้าง QR Code</button>
+    <div id="qrDisplay"></div>
+    <button onclick="closeQR()">ปิด QR Code</button>
+  </div>
 
-  <input type="text" id="activityName" placeholder="กรอกชื่อกิจกรรม เช่น หน้าเสาธง" />
-  <br>
-  <button onclick="generateQR()">สร้าง QR</button>
-
-  <div id="qrContainer"></div>
-
-  <script>
-    function generateQR() {
-      const actName = document.getElementById("activityName").value.trim();
-      if (!actName) {
-        alert("กรุณากรอกชื่อกิจกรรมก่อน");
-        return;
-      }
-
-      const baseURL = "https://yourwebsite.com/checkin.html"; // ← เปลี่ยนให้เป็น URL จริงของเว็บคุณ
-      const qrURL = `${baseURL}?act=${encodeURIComponent(actName)}`;
-
-      // ล้าง QR เดิม
-      const container = document.getElementById("qrContainer");
-      container.innerHTML = "";
-
-      // สร้าง QR ใหม่
-      QRCode.toCanvas(qrURL, { width: 256 }, function (err, canvas) {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        container.appendChild(canvas);
-
-        // แสดงลิงก์ด้วย
-        const link = document.createElement("p");
-        link.textContent = "URL: " + qrURL;
-        container.appendChild(link);
-      });
-    }
-  </script>
-
+  <!-- Firebase Init -->
+  <script src="firebase-config.js"></script>
+  <!-- Admin Script -->
+  <script src="admin.js"></script>
 </body>
 </html>
