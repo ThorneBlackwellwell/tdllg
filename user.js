@@ -38,24 +38,37 @@ function startScanLoop() {
         stopScan();
 
         const username = document.getElementById("userName").textContent.trim();
-        const userDocRef = db.collection("users").doc(username);
-        const docSnap = await userDocRef.get();
 
-        if (docSnap.exists) {
-          const data = docSnap.data();
-          if (code.data === "attend") {
-            await userDocRef.update({ attend: (data.attend || 0) + 1 });
-          } else if (code.data === "clean") {
-            await userDocRef.update({ clean: (data.clean || 0) + 1 });
-          } else {
-            alert("QR ไม่ถูกต้อง");
-          }
-
-          alert("อัปเดตสำเร็จ");
-          location.reload();
-        } else {
+        if (!username) {
           alert("ไม่พบชื่อผู้ใช้");
+          return;
         }
+
+        // ค้นหาผู้ใช้ใน collection users โดยใช้ฟิลด์ username
+        const usersRef = db.collection("users");
+        const query = usersRef.where("username", "==", username);
+        const querySnapshot = await query.get();
+
+        if (querySnapshot.empty) {
+          alert("ไม่พบชื่อผู้ใช้ในระบบ");
+          return;
+        }
+
+        // สมมติ username ซ้ำไม่มี ให้ใช้เอกสารแรก
+        const userDoc = querySnapshot.docs[0];
+        const data = userDoc.data();
+
+        if (code.data === "attend") {
+          await userDoc.ref.update({ attend: (data.attend || 0) + 1 });
+        } else if (code.data === "clean") {
+          await userDoc.ref.update({ clean: (data.clean || 0) + 1 });
+        } else {
+          alert("QR code ไม่ถูกต้อง");
+          return;
+        }
+
+        alert("อัปเดตกิจกรรมสำเร็จ");
+        location.reload();
       }
     }
     requestAnimationFrame(scanFrame);
