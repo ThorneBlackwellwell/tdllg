@@ -7,14 +7,15 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <!-- jsQR สำหรับสแกน QR -->
+  <!-- jsQR -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 </head>
 <body>
   <div class="user-container">
     <h2>ยินดีต้อนรับ <span id="userName">ชื่อผู้ใช้</span></h2>
     <input id="newName" placeholder="เปลี่ยนชื่อใหม่" />
-    <button onclick="changeName()">เปลี่ยนชื่อ</button>
+    <button id="changeNameBtn">เปลี่ยนชื่อ</button>
+
     <h3>สถิติกิจกรรม</h3>
     <ul>
       <li>เข้าแถวหน้าเสาธง: <span id="attendCount">0</span></li>
@@ -22,10 +23,21 @@
       <li>ครั้งที่จัดกิจกรรมแถว: <span id="eventAttendCount">0</span></li>
       <li>ครั้งที่จัดกิจกรรมความสะอาด: <span id="eventCleanCount">0</span></li>
     </ul>
-    <button onclick="scanQR()">เปิดกล้องสแกน QR</button>
+
+    <button id="scanBtn">เปิดกล้องสแกน QR</button>
     <video id="video" style="width:100%; max-width:400px;" hidden autoplay playsinline></video>
   </div>
 
-  <script src="user.js" type="module"></script>
+  <script type="module">
+    import { scanQR, changeName } from './user.js';
+
+    document.getElementById('scanBtn').addEventListener('click', () => {
+      scanQR();
+    });
+
+    document.getElementById('changeNameBtn').addEventListener('click', () => {
+      changeName();
+    });
+  </script>
 </body>
 </html>

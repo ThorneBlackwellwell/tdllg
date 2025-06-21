@@ -90,3 +90,8 @@ function stopScan() {
   }
   video.hidden = true;
 }
+
+export function changeName() {
+  // ตัวอย่างเปลี่ยนชื่อใน Firestore (เขียนเองตามต้องการ)
+  alert("เปลี่ยนชื่อยังไม่ถูกเขียนครับ");
+}
