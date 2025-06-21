@@ -1,3 +1,4 @@
+// user.js
 const db = firebase.firestore();
 
 const video = document.getElementById("video");
@@ -34,27 +35,25 @@ function startScanLoop() {
       const code = jsQR(imageData.data, imageData.width, imageData.height);
 
       if (code) {
-        alert("สแกนได้: " + code.data);
+        alert("✅ สแกนได้: " + code.data);
         stopScan();
 
         const username = document.getElementById("userName").textContent.trim();
 
         if (!username) {
-          alert("ไม่พบชื่อผู้ใช้");
+          alert("❌ ไม่พบชื่อผู้ใช้");
           return;
         }
 
-        // ค้นหาผู้ใช้ใน collection users โดยใช้ฟิลด์ username
         const usersRef = db.collection("users");
         const query = usersRef.where("username", "==", username);
         const querySnapshot = await query.get();
 
         if (querySnapshot.empty) {
-          alert("ไม่พบชื่อผู้ใช้ในระบบ");
+          alert("❌ ไม่พบชื่อผู้ใช้ในระบบ");
           return;
         }
 
-        // สมมติ username ซ้ำไม่มี ให้ใช้เอกสารแรก
         const userDoc = querySnapshot.docs[0];
         const data = userDoc.data();
 
@@ -63,11 +62,11 @@ function startScanLoop() {
         } else if (code.data === "clean") {
           await userDoc.ref.update({ clean: (data.clean || 0) + 1 });
         } else {
-          alert("QR code ไม่ถูกต้อง");
+          alert("❌ QR Code ไม่ถูกต้อง");
           return;
         }
 
-        alert("อัปเดตกิจกรรมสำเร็จ");
+        alert("✅ อัปเดตกิจกรรมสำเร็จ");
         location.reload();
       }
     }
