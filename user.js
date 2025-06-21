@@ -1,4 +1,7 @@
 // user.js
+// เพิ่มบรรทัดนี้บนสุดของ user.js
+import jsQR from "https://cdn.jsdelivr.net/npm/jsqr@1.5.1/dist/jsQR.es6.min.js";
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
   getFirestore,
