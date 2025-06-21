@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>กิจกรรมของฉัน</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Firebase SDK -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase Compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <!-- jsQR -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+  <!-- Firebase config -->
+  <script src="firebase-config.js"></script>
 </head>
 <body>
   <div class="user-container">
     <h2>ยินดีต้อนรับ <span id="userName">ชื่อผู้ใช้</span></h2>
-    <input id="newName" placeholder="เปลี่ยนชื่อใหม่" />
+    <input id="newName" placeholder="เปลี่ยนชื่อใหม่">
     <button id="changeNameBtn">เปลี่ยนชื่อ</button>
 
     <h3>สถิติกิจกรรม</h3>
@@ -28,16 +33,7 @@
     <video id="video" style="width:100%; max-width:400px;" hidden autoplay playsinline></video>
   </div>
 
-  <script type="module">
-    import { scanQR, changeName } from './user.js';
-
-    document.getElementById('scanBtn').addEventListener('click', () => {
-      scanQR();
-    });
-
-    document.getElementById('changeNameBtn').addEventListener('click', () => {
-      changeName();
-    });
-  </script>
+  <!-- user logic -->
+  <script src="user.js"></script>
 </body>
 </html>
