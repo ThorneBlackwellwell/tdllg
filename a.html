@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<title>ทดสอบเปิดกล้อง</title>
+</head>
+<body>
+
+<button id="startBtn">เปิดกล้อง</button><br/>
+<video id="video" width="320" height="240" autoplay></video>
+
+<script>
+  const video = document.getElementById('video');
+  const startBtn = document.getElementById('startBtn');
+
+  startBtn.addEventListener('click', async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      video.srcObject = stream;
+      video.play();
+      console.log('เปิดกล้องสำเร็จ');
+    } catch (error) {
+      alert('ไม่สามารถเปิดกล้องได้: ' + error.message);
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+</html>
