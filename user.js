@@ -1,6 +1,18 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const db = getFirestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyC1jafyykSj2ZwxixCRGPLiOlRNgbKfBkw",
+  authDomain: "mime1-1b107.firebaseapp.com",
+  projectId: "mime1-1b107",
+  storageBucket: "mime1-1b107.appspot.com",
+  messagingSenderId: "483499385793",
+  appId: "1:483499385793:web:7fcf1f8b2c2338bdab0540",
+  measurementId: "G-G7EQ1PQJC4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const video = document.getElementById('video');
 let stream = null;
@@ -10,7 +22,7 @@ export async function scanQR() {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     video.srcObject = stream;
     video.hidden = false;
-    video.play();
+    await video.play();
 
     startScanLoop();
   } catch (err) {
@@ -25,19 +37,16 @@ function startScanLoop() {
 
   async function scanFrame() {
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvasElement.height = video.videoHeight;
       canvasElement.width = video.videoWidth;
+      canvasElement.height = video.videoHeight;
       canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
       const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
 
-      // ใช้ jsQR ที่โหลดจาก <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
       const code = jsQR(imageData.data, imageData.width, imageData.height);
-
       if (code) {
         alert("สแกนได้: " + code.data);
         stopScan();
 
-        // อัพเดต Firestore ตามข้อมูลที่ได้ (ตัวอย่าง สมมติ code.data คือกิจกรรม)
         const username = document.getElementById('userName').textContent;
         if (username) {
           const userDoc = doc(db, 'users', username);
@@ -45,15 +54,18 @@ function startScanLoop() {
           if (docSnap.exists()) {
             const data = docSnap.data();
 
-            // สมมติ QR code เป็น 'attend' หรือ 'clean'
             if (code.data === 'attend') {
-              await updateDoc(userDoc, { attend: data.attend + 1 });
+              await updateDoc(userDoc, { attend: (data.attend || 0) + 1 });
             } else if (code.data === 'clean') {
-              await updateDoc(userDoc, { clean: data.clean + 1 });
+              await updateDoc(userDoc, { clean: (data.clean || 0) + 1 });
+            } else {
+              alert("QR code ไม่ถูกต้อง");
             }
 
             alert("อัพเดตข้อมูลกิจกรรมสำเร็จ");
-            location.reload(); // โหลดหน้าใหม่แสดงข้อมูลล่าสุด
+            location.reload();
+          } else {
+            alert("ไม่พบข้อมูลผู้ใช้");
           }
         }
       }
