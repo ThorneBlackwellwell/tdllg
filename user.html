@@ -1,18 +1,19 @@
+<!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>กิจกรรมของฉัน</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Firebase App (the core Firebase SDK) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<!-- Firebase Firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- jsQR สำหรับสแกน QR -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 </head>
 <body>
   <div class="user-container">
-    <h2>ยินดีต้อนรับ <span id="userName"></span></h2>
-    <input id="newName" placeholder="เปลี่ยนชื่อใหม่">
+    <h2>ยินดีต้อนรับ <span id="userName">ชื่อผู้ใช้</span></h2>
+    <input id="newName" placeholder="เปลี่ยนชื่อใหม่" />
     <button onclick="changeName()">เปลี่ยนชื่อ</button>
     <h3>สถิติกิจกรรม</h3>
     <ul>
@@ -22,10 +23,9 @@
       <li>ครั้งที่จัดกิจกรรมความสะอาด: <span id="eventCleanCount">0</span></li>
     </ul>
     <button onclick="scanQR()">เปิดกล้องสแกน QR</button>
-    <video id="video" style="width:100%;max-width:400px;" hidden autoplay></video>
+    <video id="video" style="width:100%; max-width:400px;" hidden autoplay playsinline></video>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
-  <script type="module" src="firebase-config.js"></script>
-  <script type="module" src="user.js"></script>
+
+  <script src="user.js" type="module"></script>
 </body>
 </html>

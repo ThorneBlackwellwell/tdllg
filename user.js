@@ -1,5 +1,11 @@
+// user.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC1jafyykSj2ZwxixCRGPLiOlRNgbKfBkw",
@@ -14,7 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const video = document.getElementById('video');
+const video = document.getElementById("video");
 let stream = null;
 
 export async function scanQR() {
@@ -32,8 +38,8 @@ export async function scanQR() {
 }
 
 function startScanLoop() {
-  const canvasElement = document.createElement('canvas');
-  const canvas = canvasElement.getContext('2d');
+  const canvasElement = document.createElement("canvas");
+  const canvas = canvasElement.getContext("2d");
 
   async function scanFrame() {
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -43,30 +49,33 @@ function startScanLoop() {
       const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
 
       const code = jsQR(imageData.data, imageData.width, imageData.height);
+
       if (code) {
         alert("สแกนได้: " + code.data);
         stopScan();
 
-        const username = document.getElementById('userName').textContent;
-        if (username) {
-          const userDoc = doc(db, 'users', username);
-          const docSnap = await getDoc(userDoc);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
+        const username = document.getElementById("userName").textContent.trim();
+        if (!username) {
+          alert("ไม่พบชื่อผู้ใช้");
+          return;
+        }
 
-            if (code.data === 'attend') {
-              await updateDoc(userDoc, { attend: (data.attend || 0) + 1 });
-            } else if (code.data === 'clean') {
-              await updateDoc(userDoc, { clean: (data.clean || 0) + 1 });
-            } else {
-              alert("QR code ไม่ถูกต้อง");
-            }
-
-            alert("อัพเดตข้อมูลกิจกรรมสำเร็จ");
-            location.reload();
+        const userDoc = doc(db, "users", username);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (code.data === "attend") {
+            await updateDoc(userDoc, { attend: (data.attend || 0) + 1 });
+          } else if (code.data === "clean") {
+            await updateDoc(userDoc, { clean: (data.clean || 0) + 1 });
           } else {
-            alert("ไม่พบข้อมูลผู้ใช้");
+            alert("QR code ไม่ถูกต้อง");
+            return;
           }
+          alert("อัพเดตข้อมูลกิจกรรมสำเร็จ");
+          location.reload();
+        } else {
+          alert("ไม่พบข้อมูลผู้ใช้ในระบบ");
         }
       }
     }
@@ -77,7 +86,7 @@ function startScanLoop() {
 
 function stopScan() {
   if (stream) {
-    stream.getTracks().forEach(track => track.stop());
+    stream.getTracks().forEach((track) => track.stop());
   }
   video.hidden = true;
 }
