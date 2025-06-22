@@ -5,7 +5,7 @@
   <title>กิจกรรมของฉัน</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- jsQR (ใช้สำหรับสแกน QR Code) -->
+  <!-- jsQR -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
   <!-- Firebase SDK (Compat) -->
@@ -17,7 +17,7 @@
 </head>
 <body>
   <div class="user-container">
-    <h2>ยินดีต้อนรับ <span id="userName">ธนภัทร</span></h2>
+    <h2>ยินดีต้อนรับ <span id="userName">ไม่ทราบชื่อ</span></h2>
 
     <input id="newName" placeholder="เปลี่ยนชื่อใหม่">
     <button id="changeNameBtn">เปลี่ยนชื่อ</button>
@@ -34,7 +34,7 @@
     <video id="video" style="width:100%; max-width:400px;" hidden autoplay playsinline></video>
   </div>
 
-  <!-- Script หลักที่จัดการกล้องและ Firebase -->
+  <!-- Script หลัก -->
   <script src="user.js"></script>
 </body>
 </html>

@@ -1,9 +1,26 @@
 // user.js
+
 const db = firebase.firestore();
 
 const video = document.getElementById("video");
 let stream = null;
 
+// ✅ ดึงชื่อจาก localStorage
+const username = localStorage.getItem("currentUser");
+
+// ✅ ถ้าไม่มี username ให้กลับไปหน้า login
+if (!username) {
+  alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
+  window.location.href = "login.html";
+}
+
+// ✅ แสดงชื่อผู้ใช้บนหน้าเว็บ
+document.getElementById("userName").textContent = username;
+
+// ✅ โหลดข้อมูลกิจกรรมจาก Firestore มาแสดง
+loadUserStats();
+
+// ✅ ผูกปุ่มเปิดกล้อง
 document.getElementById("scanBtn").addEventListener("click", scanQR);
 
 function scanQR() {
@@ -38,13 +55,7 @@ function startScanLoop() {
         alert("✅ สแกนได้: " + code.data);
         stopScan();
 
-        const username = document.getElementById("userName").textContent.trim();
-
-        if (!username) {
-          alert("❌ ไม่พบชื่อผู้ใช้");
-          return;
-        }
-
+        // ✅ ค้นหาจาก Firestore โดยใช้ username
         const usersRef = db.collection("users");
         const query = usersRef.where("username", "==", username);
         const querySnapshot = await query.get();
@@ -57,6 +68,7 @@ function startScanLoop() {
         const userDoc = querySnapshot.docs[0];
         const data = userDoc.data();
 
+        // ✅ เพิ่มคะแนนกิจกรรม
         if (code.data === "attend") {
           await userDoc.ref.update({ attend: (data.attend || 0) + 1 });
         } else if (code.data === "clean") {
@@ -67,7 +79,7 @@ function startScanLoop() {
         }
 
         alert("✅ อัปเดตกิจกรรมสำเร็จ");
-        location.reload();
+        loadUserStats(); // โหลดใหม่
       }
     }
     requestAnimationFrame(scanFrame);
@@ -81,4 +93,19 @@ function stopScan() {
     stream.getTracks().forEach(track => track.stop());
   }
   video.hidden = true;
+}
+
+// ✅ โหลดข้อมูลสถิติของผู้ใช้
+async function loadUserStats() {
+  const usersRef = db.collection("users");
+  const query = usersRef.where("username", "==", username);
+  const querySnapshot = await query.get();
+
+  if (!querySnapshot.empty) {
+    const data = querySnapshot.docs[0].data();
+    document.getElementById("attendCount").textContent = data.attend || 0;
+    document.getElementById("cleanCount").textContent = data.clean || 0;
+    document.getElementById("eventAttendCount").textContent = data.eventAttend || 0;
+    document.getElementById("eventCleanCount").textContent = data.eventClean || 0;
+  }
 }

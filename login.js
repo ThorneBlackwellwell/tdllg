@@ -1,26 +1,37 @@
-import { db } from './firebase-config.js';
-import { collection, getDocs } from 'firebase/firestore';
-
-window.login = async function () {
+function login() {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
-  const usersRef = collection(db, 'users');
-  const snapshot = await getDocs(usersRef);
-
-  let found = false;
-
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    if (data.username === username && data.password === password) {
-      found = true;
-      localStorage.setItem('userId', doc.id);
-      localStorage.setItem('username', data.username);
-      window.location.href = username === 'admin' ? 'admin.html' : 'user.html';
-    }
-  });
-
-  if (!found) {
-    document.getElementById('error').textContent = 'ชื่อหรือรหัสผ่านไม่ถูกต้อง';
+  if (!username || !password) {
+    document.getElementById('error').textContent = 'กรุณากรอกข้อมูลให้ครบ';
+    return;
   }
+
+  const db = firebase.firestore();
+  const usersRef = db.collection('users');
+
+  usersRef.where('username', '==', username).where('password', '==', password).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        document.getElementById('error').textContent = 'ชื่อหรือรหัสผ่านไม่ถูกต้อง';
+        return;
+      }
+      const userDoc = snapshot.docs[0];
+      localStorage.setItem('userId', userDoc.id);
+      localStorage.setItem('currentUser', username);
+      
+      // ไปยังหน้าผู้ใช้หรือแอดมิน
+      if (username === 'admin') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'user.html';
+      }
+    })
+    .catch(error => {
+      document.getElementById('error').textContent = 'เกิดข้อผิดพลาด: ' + error.message;
+      console.error(error);
+    });
 }
+
+// ผูกฟังก์ชัน login กับ window เพื่อให้ onclick ใช้งานได้
+window.login = login;

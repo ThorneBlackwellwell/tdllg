@@ -1,43 +1,26 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ล็อกอิน</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Firebase Config -->
   <script src="firebase-config.js"></script>
-  <link rel="stylesheet" href="style.css">
+  
+  <!-- login.js แบบไม่ใช้ type=module -->
+  <script src="login.js"></script>
 </head>
 <body>
   <h2>เข้าสู่ระบบ</h2>
-  <input id="loginName" placeholder="ชื่อจริง (ภาษาไทย)">
-  <input id="loginPass" type="password" placeholder="รหัสผ่าน">
+  <input id="username" placeholder="ชื่อจริง (ภาษาไทย)" />
+  <input id="password" type="password" placeholder="รหัสผ่าน" />
   <button onclick="login()">เข้าสู่ระบบ</button>
-  <a href="a.html">1</a>
-  <a href="admin.html">2</a>
-  <a href="user.html">3</a>
-
-  <script>
-    const db = firebase.firestore();
-
-    function login() {
-      const name = document.getElementById('loginName').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-
-      db.collection("users")
-        .where("username", "==", name)
-        .where("password", "==", pass)
-        .get()
-        .then(snapshot => {
-          if (snapshot.empty) {
-            alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
-          } else {
-            const userId = snapshot.docs[0].id;
-            localStorage.setItem("userId", userId); // ใช้เพื่อโหลดข้อมูลในหน้า user.html
-            window.location.href = "user.html"; // ไปหน้า user หลังล็อกอิน
-          }
-        });
-    }
-  </script>
+  <p id="error" style="color:red;"></p>
+  <a href="admin.html">1</a>
 </body>
 </html>
